@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd"><html><head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  
+  
+  <title>  添加密钥后还要密码才能登陆？ |   Ritbrz | 满架蔷薇一院香 </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  
+<link rel="stylesheet" href="/nayo.min.css">
+ 
+  
+<link rel="stylesheet" href="/style.scss.css">
+ 
+  
+<link rel="stylesheet" href="/font-awesome.min.css">
+ 
+  
+<link rel="stylesheet" href="/animate.3.5.2.min.css">
+ 
+
+<meta name="generator" content="Hexo 5.2.0"></head>  
+  <body>   
+    
+      <div class="container">       
+
+          
+            <section class="main">  
+          
+          <div class="header animated fadeInDown">
+    <div class="site_title_container">
+        <div class="site_title">
+            <a href="/"><img src="/images/logo.jpg" alt="breeze"></a>
+        </div>
+
+        <div class="description">
+            <a href="/about">
+                <p class="sub_title">Roaming in the breeze</p>
+            </a>
+            <div class="my_socials">
+                <a target="_blank" rel="noopener" href="https://github.com/ritbrz" title="github"><i class="fa fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+</div>  
+
+          <div class="autopagerize_page_element">
+	<div class="content">
+			<article class="post">
+  
+					<div class="post_title post_detail_title">
+
+	<h2>	
+		<a>添加密钥后还要密码才能登陆？</a>
+	</h2>
+			
+
+	<div class="meta-info">	
+	<span>
+		2020.09.29
+	</span>
+
+</div>
+
+</div> 
+					
+    <script type="text/x-mathjax-config">
+        var post = document.getElementsByClassName("post")[0];  
+        MathJax.Hub.Config({
+            showProcessingMessages: false,
+            messageStyle: "none",    
+            tex2jax: {
+                inlineMath:  [ ["$", "$"] , ["\\(","\\)"]],
+                displayMath: [ ["$$","$$"] , ["\\[","\\]"]],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+            },
+            "HTML-CSS": {            
+                showMathMenu: false
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub,post]);
+    </script>
+    <style>.MathJax{outline:0;}</style>
+
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.2/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ 
+				
+						<div class="typo post-content slideDownMin">
+				
+						
+				
+							
+									<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>今天在连接一台GPU服务器时，以前添加密钥后，一直都能正常无密码登录，今天还需要输入密码？密钥被删了吗？还是发生了什么？</p>
+<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>检查密钥匹配、SSH 配置、文件（夹）权限。</p>
+<p>天啊，发现 <code>~</code> 的 <code>owner</code> 竟然是 <code>root</code>，权限被修改为 <code>777</code>。（是谁干的！！！</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>在 <code>/etc/ssh/sshd_config</code> 中配置 <code>StrictModes yes</code> 选项时，需要严格设置相关文件（夹）权限，以及文件（夹）的<code>拥有者</code>。</p>
+<p>文件（夹）权限正确配置：</p>
+<p><code>~</code>： 750</p>
+<p><code>~/.ssh</code>：700</p>
+<p><code>~/.ssh/authorized_keys</code>：600</p>
+<p>重启 <code>ssh</code> 服务：<code>sudo service sshd restart</code></p>
+  	
+									
+						</div>     
+						
+				
+					<div class="post-footer">
+
+  <!-- <div class="post-footer-other">
+      <span class="post-footer-item">
+         
+      </span>           
+      <span class="post-footer-item">
+        
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		<div class="-mob-inner">
+		   			             
+            <a class="iconfont icon-share-qq -mob-share-link"
+			></a>		
+     	   			             
+            <a class="iconfont icon-share-weixin -mob-share-link"
+			></a>		
+     	   			             
+            <a class="iconfont icon-share-weibo -mob-share-link"
+			></a>		
+     	   			             
+            <a class="iconfont icon-share-douban -mob-share-link"
+			></a>		
+     	   			             
+            <a class="iconfont icon-share-facebook -mob-share-link"
+			></a>		
+     	   			             
+            <a class="iconfont icon-share-twitter -mob-share-link"
+			></a>		
+     	   			             
+            <a class="iconfont icon-share-google -mob-share-link"
+			></a>		
+     	   
+		</div>
+	</div>	
+
+      </span>           
+  </div>   -->
+
+  <div class="post-footer-meta">
+        	
+
+        	
+  </div>
+
+</div>
+
+ 
+					
+	
+				</article>
+	</div>
+</div>
+
+          </section> 
+      </div>            
+    
+    <a id="backTop">
+      <span>
+        <i class="iconfont icon-backtotop"></i>
+      </span>
+    </a> 
+
+  
+    
+
+
+<div class="footer">
+	<a href="/">Home</a>
+	<a href="/archives">Archives</a>
+	<a href="/about">About</a>
+	<a target="_blank" href="http://www.w2fzu.com">West2online</a>
+
+	<div class="powered_by">
+		<a href="#">Ritbrz</a>
+	</div>
+
+	<div class="footer_slogan"><img src="/images/font.svg" alt="重拾写作的乐趣">
+
+	</div>
+
+</div>   
+
+    
+<script src="/nayo.bundle.js"></script>
+           
+          
+</body></html>
