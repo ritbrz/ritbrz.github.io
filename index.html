@@ -63,6 +63,47 @@
 	   
 	<div class="article-header">
 	    
+		<a class="article-title" href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/">启动Docker容器就断网？</a>  
+	       
+		 
+
+		<div class="article-meta">
+			<time>Oct 25, 2020</time>
+			
+		</div>
+	</div>
+
+
+	
+
+    
+	<div class="typo article-excerpt">	
+		
+			<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在宿舍尝试使用 <code>docker-compose</code> 启动工作站上的一组容器的时候，敲完命令一回车就和工作站失联了。</p>
+<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>起初，还以为实验室网络又抽风了，闲置了一会儿回来，尝试 <code>ping</code> 的时候，已经无法连接，<code>ssh</code> 自然也登录不了；</p>
+<p>接着，发现工作站上用 <code>virtual box</code> 安装的 <code>Windows 10</code> 远程桌面还能连上，这到底发生了啥？难道网管正在做什么操作吗/(ㄒoㄒ)/~~</p>
+<p>随后，尝试连接GPU服务器，也能成功登录，就直接用GPU服务器当跳板机，<code>ssh</code> 到工作站上，成功了！</p>
+<p>由于，最后执行的一条命令是 <code>docker-compose up</code>，随即就执行 <code>docker-compose down</code> 关闭容器。</p>
+<p>在本地又尝试连接工作站，正常了。那么，问题肯定是出在 <code>docker-compose</code> 上了<del>~</del></p>
+<p>再次通过跳板机执行命令，启动 <code>docker</code> 容器，检查网络，执行 <code>ifconfig</code> 命令，发现多了网桥的配置。</p>
+<p>一对比，原来 <code>docker</code> 分配的网段，跟宿舍的网段冲突了。难怪在实验室的时候一切正常，回来一操作 <code>docker</code> 就失联。</p>
+		  	  
+	</div>
+
+	<div class="article-bottom">
+		<a class="article-readmore" href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/">Continue</a> 	
+	</div>	
+    
+</article>     
+     	
+    	  	
+  		
+    			
+
+<article class="article">		
+	   
+	<div class="article-header">
+	    
 		<a class="article-title" href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/">根目录磁盘空间用完了？还有一个隐藏分区？</a>  
 	       
 		 
@@ -87,7 +128,7 @@
 	</div>
 
 	<div class="article-bottom">
-		<a class="article-readmore" href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/">閱讀更多</a> 	
+		<a class="article-readmore" href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/">Continue</a> 	
 	</div>	
     
 </article>     
@@ -100,7 +141,7 @@
 	   
 	<div class="article-header">
 	    
-		<a class="article-title" href="/2020/09/29/%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5%E5%90%8E%E8%BF%98%E8%A6%81%E5%AF%86%E7%A0%81%E6%89%8D%E8%83%BD%E7%99%BB%E9%99%86%EF%BC%9F/">添加密钥后还要密码才能登陆？</a>  
+		<a class="article-title" href="/2020/09/29/%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5%E5%90%8E%E8%BF%98%E8%A6%81%E5%AF%86%E7%A0%81%E6%89%8D%E8%83%BD%E7%99%BB%E5%BD%95%EF%BC%9F/">添加密钥后还要密码才能登录？</a>  
 	       
 		 
 
@@ -130,7 +171,7 @@
 	</div>
 
 	<div class="article-bottom">
-		<a class="article-readmore" href="/2020/09/29/%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5%E5%90%8E%E8%BF%98%E8%A6%81%E5%AF%86%E7%A0%81%E6%89%8D%E8%83%BD%E7%99%BB%E9%99%86%EF%BC%9F/">閱讀更多</a> 	
+		<a class="article-readmore" href="/2020/09/29/%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5%E5%90%8E%E8%BF%98%E8%A6%81%E5%AF%86%E7%A0%81%E6%89%8D%E8%83%BD%E7%99%BB%E5%BD%95%EF%BC%9F/">Continue</a> 	
 	</div>	
     
 </article>     

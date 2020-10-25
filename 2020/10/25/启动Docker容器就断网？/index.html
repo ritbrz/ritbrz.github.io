@@ -3,7 +3,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   
   
-  <title>  根目录磁盘空间用完了？还有一个隐藏分区？ |   Ritbrz | 满架蔷薇一院香 </title>
+  <title>  启动Docker容器就断网？ |   Ritbrz | 满架蔷薇一院香 </title>
 
  
   
@@ -56,13 +56,13 @@
 					<div class="post_title post_detail_title">
 
 	<h2>	
-		<a>根目录磁盘空间用完了？还有一个隐藏分区？</a>
+		<a>启动Docker容器就断网？</a>
 	</h2>
 			
 
 	<div class="meta-info">	
 	<span>
-		2020.10.8
+		2020.10.25
 	</span>
 
 </div>
@@ -95,41 +95,26 @@
 						
 				
 							
-									<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>近期使用某几台 GPU 服务器时，发现根目录的磁盘空间一直处于几乎用完的状态。一看<code>home</code>目录，充斥了各种<code>conda</code>环境。(害，动又不能动</p>
-<p>执行<code>df -h</code> 命令时，发现磁盘大小很奇怪，怎么会有90G的磁盘呢？</p>
-<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>使用 <code>fdisk -l</code> 命令查看磁盘情况。</p>
-<p>果然，系统盘就是 256G 的嘛！怎么还有100多G空间闲置着没分配。 /(ㄒoㄒ)/~~</p>
+									<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在宿舍尝试使用 <code>docker-compose</code> 启动工作站上的一组容器的时候，敲完命令一回车就和工作站失联了。</p>
+<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>起初，还以为实验室网络又抽风了，闲置了一会儿回来，尝试 <code>ping</code> 的时候，已经无法连接，<code>ssh</code> 自然也登录不了；</p>
+<p>接着，发现工作站上用 <code>virtual box</code> 安装的 <code>Windows 10</code> 远程桌面还能连上，这到底发生了啥？难道网管正在做什么操作吗/(ㄒoㄒ)/~~</p>
+<p>随后，尝试连接GPU服务器，也能成功登录，就直接用GPU服务器当跳板机，<code>ssh</code> 到工作站上，成功了！</p>
+<p>由于，最后执行的一条命令是 <code>docker-compose up</code>，随即就执行 <code>docker-compose down</code> 关闭容器。</p>
+<p>在本地又尝试连接工作站，正常了。那么，问题肯定是出在 <code>docker-compose</code> 上了<del>~</del></p>
+<p>再次通过跳板机执行命令，启动 <code>docker</code> 容器，检查网络，执行 <code>ifconfig</code> 命令，发现多了网桥的配置。</p>
+<p>一对比，原来 <code>docker</code> 分配的网段，跟宿舍的网段冲突了。难怪在实验室的时候一切正常，回来一操作 <code>docker</code> 就失联。</p>
 <a id="more"></a>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>分区、格式化、挂载、转移 <code>/home</code> 目录文件～～～</p>
-<ol>
-<li>分区</li>
-</ol>
-<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fdisk /dev/sda</span><br><span class="line"></span><br><span class="line">n <span class="comment"># 创建新分区</span></span><br><span class="line">p <span class="comment"># 创建逻辑分区</span></span><br><span class="line">w <span class="comment"># 保存分区表</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ul>
+<li><p>方法一：修改宿舍网段（我没权限啊啊啊）</p>
+</li>
+<li><p>方法二：修改 <code>docker-compose</code> 分配的网段</p>
+<p>  在 <code>docker-compose.yml</code> 中进行相关配置即可。</p>
+<p>  例如：</p>
+  <figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">test:</span></span><br><span class="line">    <span class="attr">ipam:</span></span><br><span class="line">      <span class="attr">config:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">subnet:</span> <span class="number">172.31</span><span class="number">.1</span><span class="number">.0</span><span class="string">/24</span></span><br><span class="line">        <span class="attr">gateway:</span> <span class="number">172.31</span><span class="number">.1</span><span class="number">.1</span></span><br></pre></td></tr></tbody></table></figure>
 
-<p>此处提示，<code>kernel</code>仍然使用旧分区表，<code>reboot</code>后新分区表生效。</p>
-<ol start="2">
-<li>格式化</li>
-</ol>
-<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkfs.ext4 /dev/sda4</span><br></pre></td></tr></tbody></table></figure>
-
-<ol start="3">
-<li>挂载</li>
-</ol>
-<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount /dev/sda4 /mnt/home</span><br></pre></td></tr></tbody></table></figure>
-
-<ol start="4">
-<li>拷贝文件</li>
-</ol>
-<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -a /home/* /mnt/home</span><br></pre></td></tr></tbody></table></figure>
-
-<ol start="5">
-<li>挂载至 /home 目录</li>
-</ol>
-<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mv /home /home_old</span><br><span class="line">umount /dev/sda4</span><br><span class="line">mount /dev/sda4 /home</span><br></pre></td></tr></tbody></table></figure>
-
-<ol start="6">
-<li>修改 <code>/etc/fstab</code>，实现开机自动挂载</li>
-</ol>
+<p>  当然，也可通过修改 <code>/etc/dameon/docker.json</code> 为 <code>docker-compose</code> 指定默认分配网段。</p>
+</li>
+</ul>
   	
 									
 						</div>     
@@ -193,22 +178,13 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
 <nav class="post-footer-nav">
   
-    <div class="post-footer-link">
-      <a href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/" id="post-nav-newer" class="post-nav-link-wrap">
-        <strong class="post-nav-caption">newer</strong>
-           
-          </a><a class="post-nav-title" href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/">
-          启动Docker容器就断网？</a>
-      
-    </div>
-  
   
     <div class="post-footer-link">
-      <a href="/2020/09/29/%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5%E5%90%8E%E8%BF%98%E8%A6%81%E5%AF%86%E7%A0%81%E6%89%8D%E8%83%BD%E7%99%BB%E5%BD%95%EF%BC%9F/" id="post-nav-older" class="post-nav-link-wrap">
+      <a href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/" id="post-nav-older" class="post-nav-link-wrap">
         <strong class="post-nav-caption">older</strong>
         
-          </a><a class="post-nav-title" href="/2020/09/29/%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5%E5%90%8E%E8%BF%98%E8%A6%81%E5%AF%86%E7%A0%81%E6%89%8D%E8%83%BD%E7%99%BB%E5%BD%95%EF%BC%9F/">
-          添加密钥后还要密码才能登录？</a>
+          </a><a class="post-nav-title" href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/">
+          根目录磁盘空间用完了？还有一个隐藏分区？</a>
       
     </div>
   
