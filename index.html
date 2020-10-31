@@ -63,6 +63,55 @@
 	   
 	<div class="article-header">
 	    
+		<a class="article-title" href="/2020/10/31/Ubuntu-%E4%B8%8B%E4%BD%BF%E7%94%A8-Docker-%E5%AE%89%E8%A3%85-AdguardHome/">Ubuntu 下使用 Docker 安装 AdguardHome</a>  
+	       
+		 
+
+		<div class="article-meta">
+			<time>Oct 31, 2020</time>
+			
+		</div>
+	</div>
+
+
+	
+
+    
+	<div class="typo article-excerpt">	
+		 
+			<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>无脑运行命令：</p>
+<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run --name adguardhome \</span><br><span class="line">-v /my/own/workdir:/opt/adguardhome/work \</span><br><span class="line">-v /my/own/confdir:/opt/adguardhome/conf \</span><br><span class="line">-p 53:53/tcp -p 53:53/udp \</span><br><span class="line">-p 67:67/udp -p 68:68/tcp -p 68:68/udp \</span><br><span class="line">-p 80:80/tcp -p 443:443/tcp -p 853:853/tcp \</span><br><span class="line">-p 3000:3000/tcp \</span><br><span class="line">-d adguard/adguardhome</span><br></pre></td></tr></tbody></table></figure>
+
+<p>报错：</p>
+<figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker: Error response from daemon: driver failed programming external connectivity on endpoint adguardhome (ca00b7dc0b9cd1cb00609cdb99d21918707651f160248f6507581e07e8d0d620): Bind for 0.0.0.0:53 failed: port is already allocated.</span><br></pre></td></tr></tbody></table></figure>
+
+<p>端口被占用了。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ul>
+<li><p>方法一：修改本地冲突端口让路。（太暴力了吧</p>
+</li>
+<li><p>方法二：启动服务在映射端口时指定监听 <code>Docker</code> 的 <code>IP</code></p>
+  <figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run --name adguardhome \</span><br><span class="line">-v /my/own/workdir:/opt/adguardhome/work \</span><br><span class="line">-v /my/own/confdir:/opt/adguardhome/conf \</span><br><span class="line">-p 172.31.10.1:53:53/tcp -p 172.31.10.1:53:53/udp \</span><br><span class="line">-p 172.31.10.1:67:67/udp -p 172.31.10.1:68:68/tcp -p 172.31.10.1:68:68/udp \</span><br><span class="line">-p 172.31.10.1:80:80/tcp -p 172.31.10.1:443:443/tcp -p 172.31.10.1:853:853/tcp \</span><br><span class="line">-p 172.31.10.1:3000:3000/tcp \</span><br><span class="line">-d adguard/adguardhome</span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ul>
+
+		  	  
+	</div>
+
+	<div class="article-bottom">
+		<a class="article-readmore" href="/2020/10/31/Ubuntu-%E4%B8%8B%E4%BD%BF%E7%94%A8-Docker-%E5%AE%89%E8%A3%85-AdguardHome/">Continue</a> 	
+	</div>	
+    
+</article>     
+     	
+    	  	
+  		
+    			
+
+<article class="article">		
+	   
+	<div class="article-header">
+	    
 		<a class="article-title" href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/">启动Docker容器就断网？</a>  
 	       
 		 

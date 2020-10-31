@@ -3,7 +3,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   
   
-  <title>  启动Docker容器就断网？ |   Ritbrz | 满架蔷薇一院香 </title>
+  <title>  Ubuntu 下使用 Docker 安装 AdguardHome |   Ritbrz | 满架蔷薇一院香 </title>
 
  
   
@@ -56,13 +56,13 @@
 					<div class="post_title post_detail_title">
 
 	<h2>	
-		<a>启动Docker容器就断网？</a>
+		<a>Ubuntu 下使用 Docker 安装 AdguardHome</a>
 	</h2>
 			
 
 	<div class="meta-info">	
 	<span>
-		2020.10.25
+		2020.10.31
 	</span>
 
 </div>
@@ -95,24 +95,19 @@
 						
 				
 							
-									<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在宿舍尝试使用 <code>docker-compose</code> 启动工作站上的一组容器的时候，敲完命令一回车就和工作站失联了。</p>
-<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>起初，还以为实验室网络又抽风了，闲置了一会儿回来，尝试 <code>ping</code> 的时候，已经无法连接，<code>ssh</code> 自然也登录不了；</p>
-<p>接着，发现工作站上用 <code>virtual box</code> 安装的 <code>Windows 10</code> 远程桌面还能连上，这到底发生了啥？难道网管正在做什么操作吗/(ㄒoㄒ)/~~</p>
-<p>随后，尝试连接GPU服务器，也能成功登录，就直接用GPU服务器当跳板机，<code>ssh</code> 到工作站上，成功了！</p>
-<p>由于，最后执行的一条命令是 <code>docker-compose up</code>，随即就执行 <code>docker-compose down</code> 关闭容器。</p>
-<p>在本地又尝试连接工作站，正常了。那么，问题肯定是出在 <code>docker-compose</code> 上了<del>~</del></p>
-<p>再次通过跳板机执行命令，启动 <code>docker</code> 容器，检查网络，执行 <code>ifconfig</code> 命令，发现多了网桥的配置。</p>
-<p>一对比，原来 <code>docker</code> 分配的网段，跟宿舍的网段冲突了。难怪在实验室的时候一切正常，回来一操作 <code>docker</code> 就失联。</p>
-<a id="more"></a>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ul>
-<li><p>方法一：修改宿舍网段（我没权限啊啊啊）</p>
-</li>
-<li><p>方法二：修改 <code>docker-compose</code> 分配的网段</p>
-<p>  在 <code>docker-compose.yml</code> 中进行相关配置即可。</p>
-<p>  例如：</p>
-  <figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">test:</span></span><br><span class="line">    <span class="attr">ipam:</span></span><br><span class="line">      <span class="attr">config:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">subnet:</span> <span class="number">172.31</span><span class="number">.1</span><span class="number">.0</span><span class="string">/24</span></span><br><span class="line">        <span class="attr">gateway:</span> <span class="number">172.31</span><span class="number">.1</span><span class="number">.1</span></span><br></pre></td></tr></tbody></table></figure>
+									<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>无脑运行命令：</p>
+<figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run --name adguardhome \</span><br><span class="line">-v /my/own/workdir:/opt/adguardhome/work \</span><br><span class="line">-v /my/own/confdir:/opt/adguardhome/conf \</span><br><span class="line">-p 53:53/tcp -p 53:53/udp \</span><br><span class="line">-p 67:67/udp -p 68:68/tcp -p 68:68/udp \</span><br><span class="line">-p 80:80/tcp -p 443:443/tcp -p 853:853/tcp \</span><br><span class="line">-p 3000:3000/tcp \</span><br><span class="line">-d adguard/adguardhome</span><br></pre></td></tr></tbody></table></figure>
 
-<p>  当然，也可通过修改 <code>/etc/dameon/docker.json</code> 为 <code>docker-compose</code> 指定默认分配网段。</p>
+<p>报错：</p>
+<figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker: Error response from daemon: driver failed programming external connectivity on endpoint adguardhome (ca00b7dc0b9cd1cb00609cdb99d21918707651f160248f6507581e07e8d0d620): Bind for 0.0.0.0:53 failed: port is already allocated.</span><br></pre></td></tr></tbody></table></figure>
+
+<p>端口被占用了。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ul>
+<li><p>方法一：修改本地冲突端口让路。（太暴力了吧</p>
+</li>
+<li><p>方法二：启动服务在映射端口时指定监听 <code>Docker</code> 的 <code>IP</code></p>
+  <figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run --name adguardhome \</span><br><span class="line">-v /my/own/workdir:/opt/adguardhome/work \</span><br><span class="line">-v /my/own/confdir:/opt/adguardhome/conf \</span><br><span class="line">-p 172.31.10.1:53:53/tcp -p 172.31.10.1:53:53/udp \</span><br><span class="line">-p 172.31.10.1:67:67/udp -p 172.31.10.1:68:68/tcp -p 172.31.10.1:68:68/udp \</span><br><span class="line">-p 172.31.10.1:80:80/tcp -p 172.31.10.1:443:443/tcp -p 172.31.10.1:853:853/tcp \</span><br><span class="line">-p 172.31.10.1:3000:3000/tcp \</span><br><span class="line">-d adguard/adguardhome</span><br></pre></td></tr></tbody></table></figure>
+
 </li>
 </ul>
   	
@@ -178,22 +173,13 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
 <nav class="post-footer-nav">
   
-    <div class="post-footer-link">
-      <a href="/2020/10/31/Ubuntu-%E4%B8%8B%E4%BD%BF%E7%94%A8-Docker-%E5%AE%89%E8%A3%85-AdguardHome/" id="post-nav-newer" class="post-nav-link-wrap">
-        <strong class="post-nav-caption">newer</strong>
-           
-          </a><a class="post-nav-title" href="/2020/10/31/Ubuntu-%E4%B8%8B%E4%BD%BF%E7%94%A8-Docker-%E5%AE%89%E8%A3%85-AdguardHome/">
-          Ubuntu 下使用 Docker 安装 AdguardHome</a>
-      
-    </div>
-  
   
     <div class="post-footer-link">
-      <a href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/" id="post-nav-older" class="post-nav-link-wrap">
+      <a href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/" id="post-nav-older" class="post-nav-link-wrap">
         <strong class="post-nav-caption">older</strong>
         
-          </a><a class="post-nav-title" href="/2020/10/08/%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%94%A8%E5%AE%8C%E4%BA%86%EF%BC%9F%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E5%88%86%E5%8C%BA%EF%BC%9F/">
-          根目录磁盘空间用完了？还有一个隐藏分区？</a>
+          </a><a class="post-nav-title" href="/2020/10/25/%E5%90%AF%E5%8A%A8Docker%E5%AE%B9%E5%99%A8%E5%B0%B1%E6%96%AD%E7%BD%91%EF%BC%9F/">
+          启动Docker容器就断网？</a>
       
     </div>
   
